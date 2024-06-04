@@ -1,0 +1,26 @@
+# Ignore all .env files
+.env
+
+# Ignore Visual Studio temporary files, build results, and user-specific files
+.vs/
+
+# Ignore all API keys
+api_key.txt
+
+# Ignore all configuration files
+config/*.json
+
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+*.log
+*.user
+*.rsuser
+*.suo
+*.pdb
+*.opendb
+*.VC.db
+*.cache
+*.obj
+*.exe
+*.dll
+*.class
