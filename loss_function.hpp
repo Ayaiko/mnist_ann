@@ -11,7 +11,12 @@ namespace loss_function {
 	{
 		vector<float> probabilities = activation_function::softmax(logits);
 
+		cout << "prob " << *max_element(probabilities.begin(), probabilities.end()) << endl;
 		return -log(*max_element(probabilities.begin(), probabilities.end() ) ) ;
 	}
 
+	float cross_entropy_loss_grad(vector<float>& probabilities)
+	{
+		return -1.0/ (*max_element(probabilities.begin(), probabilities.end() ));
+	}
 }

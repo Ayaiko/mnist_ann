@@ -14,7 +14,7 @@ private:
 	//data members
 	vector<Layer*> sequence;
 	vector<float> output_label;
-	vector<vector<float>> predicted_probabilities;
+	vector<float> predicted_probabilities;
 	vector<uint8_t> model_label;
 
 	//helper method
@@ -30,6 +30,19 @@ private:
 		}
 
 		return layer_output;
+	}
+
+	void backward_pass()
+	{
+		float loss_grad = loss_function::cross_entropy_loss_grad(predicted_probabilities);
+		size_t layer_index = sequence.size() - 1;
+		vector<vector<float>> gradients(1, vector<float>(1, loss_grad) );
+
+		for (int i = layer_index ; i > 0; i--)
+		{
+			gradients = sequence[i]->backward_propagation(gradients);
+			sequence[i]->weight_update(gradients, 0.01f);
+		}
 	}
 
 	template<typename T = uint8_t>
@@ -55,6 +68,7 @@ public:
 	{
 		//
 		float loss_value;
+		vector<float> losses;
 
 		vector<float> model_output;
 		size_t data_size = data.size();
@@ -65,13 +79,15 @@ public:
 		{
 			//convert type to float
 			vector<float> input = convert_to_float(data[data_size]);
+			//logit from output layer
 			model_output = forward_pass(input, "raw");
+			predicted_probabilities = activation_function::softmax(model_output);
 
 			loss_value = loss_function::cross_entropy_loss(model_output);
-			cout << loss_value << endl;
-			//store output from the output layer
-			predicted_probabilities.push_back(model_output);
 
+			cout << "loss value: " << loss_value << endl;
+			
+			backward_pass();
 		}
 
 	}
@@ -93,9 +109,13 @@ public:
 		return output_label;
 	}
 
-	vector<vector<float>> debug() const
+	vector<float> debug() const
 	{
 		return predicted_probabilities;
 	}
 
+	vector<float> evaluate()
+	{
+		return {};
+	}
 };

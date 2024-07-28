@@ -28,7 +28,7 @@ int main()
 	//initiate instance
 	Model model;
 	InputLayer inputLayer({ 28, 28 });
-	Dense hiddenLayer1(5, "relu");
+	Dense hiddenLayer1(64, "relu");
 	Dense outputLayer(10, "softmax");
 
 	model.add_layer(&inputLayer);
@@ -36,7 +36,7 @@ int main()
 	model.add_layer(&outputLayer);
 
 	auto start = chrono::high_resolution_clock::now();
-	model.fit(data_tpack, label_tpack);
+	model.fit(data , label);
 	//model.fit(data, label);
 	auto end = chrono::high_resolution_clock::now();
 
@@ -44,18 +44,6 @@ int main()
 
 	// Calculate the duration
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-	
-	//testing site
-	
-	vector<vector<float>> test = model.debug();
-
-	cout << "output size: " << test[0].size() << endl;
-	for (auto i : test[0])
-	{
-		cout << i << endl;
-	}
-
 
 	return 0;
 }

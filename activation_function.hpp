@@ -6,6 +6,9 @@
 using namespace std;
 
 namespace activation_function {
+	vector<float> relu_grad(vector<float>& logits);
+	vector<float> softmax_grad(vector<float>& predicted_probabilities, float& loss_gradients);
+
 	vector<float> weighted_sum(vector<vector<float>> weight, vector<float> input)
 	{
 		//number of neuron in the current layer
@@ -59,11 +62,8 @@ namespace activation_function {
 		return output;
 	}
 
-	vector<float> apply_activation(string activation_function, vector<vector<float>> weight, vector<float> input)
+	vector<float> apply_activation(string activation_function, vector<float>& logits)
 	{
-		vector<float> logits;
-		logits = weighted_sum(weight, input);
-
 		if (activation_function == "relu")
 		{
 			return relu(logits);
@@ -75,6 +75,54 @@ namespace activation_function {
 	
 		return {};
 	}
+
+	vector<float> apply_activation_grad(string activation_function, vector<float>& logits, float& loss_gradient)
+	{
+		if (activation_function == "relu")
+		{
+			return relu_grad(logits);
+		}
+		else if (activation_function == "softmax")
+		{
+			return softmax_grad(logits, loss_gradient);
+		}
+
+	}
+
+	vector<float> relu_grad(vector<float>& logits)
+	{
+		const size_t size = logits.size();
+		vector<float> output(size);
+		for (int i = 0; i < size; i++)
+		{
+			if (logits[i] > 0) output[i] = 1;
+			else output[i] = 0;
+		}
+		return output;
+	}
+
+	vector<float> softmax_grad(vector<float>& predicted_probabilities, float& loss_gradients)
+	{
+		const size_t size = predicted_probabilities.size();
+		vector<float> output(size);
+		vector<float>::iterator max_idx = max_element(predicted_probabilities.begin(), predicted_probabilities.end() ) ;
+		
+		for (int i = 0; i < size; i++)
+		{
+			if (i == predicted_probabilities[std::distance(predicted_probabilities.begin(), max_idx)])
+			{
+				output[i] = loss_gradients * (*max_idx) * (1 - (*max_idx) );
+			}
+			else
+			{
+				output[i] = loss_gradients * (*max_idx) * -predicted_probabilities[i];
+			}
+		}
+
+
+		return output;
+	}
 }
+
 
 
